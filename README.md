@@ -23,7 +23,7 @@ This application recognizes 24 static ASL letters (A-Y, excluding J and Z which 
 
 ## Demo video
 
-- Webcam
+![Demo del proyecto](Demo.gif)
 
 ## Installation
 
