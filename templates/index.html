@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Recognition - Real Time</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            padding: 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .video-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .prediction-banner {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .prediction-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .prediction-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-family: monospace;
+        }
+
+        .video-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            flex: 1;
+            min-height: 0;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .status-banner {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .status-banner.waiting {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2d3436;
+            display: block;
+        }
+
+        .status-banner.lost {
+            background: linear-gradient(135deg, #fab1a0 0%, #ff7675 100%);
+            color: #2d3436;
+            display: block;
+        }
+
+        .status-banner.detected {
+            display: none;
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-image {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+        }
+
+        .example-letter {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .change-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .change-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .predictions-list {
+            list-style: none;
+        }
+
+        .prediction-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .prediction-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .prediction-item.top {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .prediction-letter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 35px;
+            font-family: monospace;
+        }
+
+        .prediction-bar-container {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 8px;
+        }
+
+        .prediction-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .prediction-item.top .prediction-bar {
+            background: linear-gradient(90deg, #66ff66 0%, #44dd44 100%);
+        }
+
+        .prediction-percent {
+            font-size: 0.9rem;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .instructions {
+            background: white;
+            border-radius: 15px;
+            padding: 12px 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .instructions p {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .no-predictions {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤟 ASL Recognition System</h1>
+            <p class="subtitle">Real-time American Sign Language Detection</p>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="prediction-banner">
+                    <div class="prediction-label">Final Prediction</div>
+                    <div class="prediction-value" id="finalPrediction">---</div>
+                </div>
+
+                <div class="status-banner" id="statusBanner">
+                    <span class="status-icon">👋</span>
+                    <span id="statusMessage">Show your hand to start</span>
+                </div>
+
+                <div class="video-container">
+                    <img id="video" src="{{ url_for('video_feed') }}" alt="Video Feed">
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-title">
+                        <span class="icon">📊</span>
+                        Top 5 Predictions
+                    </div>
+                    <ul class="predictions-list" id="predictionsList">
+                        <li class="loading">Waiting for predictions...</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="icon">📚</span>
+                        Letter of the Day
+                    </div>
+                    <img id="exampleImage" class="example-image" src="" alt="Example Sign" style="display: none;">
+                    <div class="example-letter" id="exampleLetter">---</div>
+                    <button class="change-btn" onclick="changeLetter()">
+                        🔄 Learn New Letter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <p>
+                <strong>Instructions:</strong> Show your hand to the camera and make ASL signs. 
+                The system will detect your hand and predict the letter in real-time. 
+                Press "Learn New Letter" to practice a different letter!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval;
+
+        function updatePredictions() {
+            fetch('/predictions')
+                .then(response => response.json())
+                .then(data => {
+                    // Update final prediction
+                    document.getElementById('finalPrediction').textContent = 
+                        data.final_prediction || '---';
+
+                    // Update status banner
+                    const statusBanner = document.getElementById('statusBanner');
+                    const statusMessage = document.getElementById('statusMessage');
+                    
+                    statusBanner.className = 'status-banner ' + data.hand_status;
+                    
+                    if (data.hand_status === 'waiting') {
+                        statusMessage.innerHTML = '<span class="status-icon">👋</span> Show your hand to start';
+                    } else if (data.hand_status === 'lost') {
+                        statusMessage.innerHTML = '<span class="status-icon">⚠️</span> No hand detected';
+                    }
+
+                    // Update top 5 predictions
+                    const list = document.getElementById('predictionsList');
+                    if (data.top5_labels && data.top5_labels.length > 0) {
+                        list.innerHTML = '';
+                        data.top5_labels.forEach((letter, index) => {
+                            const prob = (data.top5_probs[index] * 100).toFixed(1);
+                            const isTop = index === 0;
+                            
+                            const li = document.createElement('li');
+                            li.className = `prediction-item ${isTop ? 'top' : ''}`;
+                            
+                            li.innerHTML = `
+                                <span class="prediction-letter">${letter}</span>
+                                <div class="prediction-bar-container">
+                                    <div class="prediction-bar" style="width: ${prob}%"></div>
+                                </div>
+                                <span class="prediction-percent">${prob}%</span>
+                            `;
+                            
+                            list.appendChild(li);
+                        });
+                    } else {
+                        list.innerHTML = '<li class="no-predictions">No hand detected</li>';
+                    }
+
+                    // Update letter of the day
+                    document.getElementById('exampleLetter').textContent = data.letter_of_day;
+                    
+                    // Update example image
+                    const exampleImg = document.getElementById('exampleImage');
+                    if (data.example_image) {
+                        exampleImg.src = data.example_image;
+                        exampleImg.style.display = 'block';
+                    } else {
+                        exampleImg.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error fetching predictions:', error));
+        }
+
+        function changeLetter() {
+            fetch('/change_letter')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('New letter:', data.letter);
+                    updatePredictions();
+                })
+                .catch(error => console.error('Error changing letter:', error));
+        }
+
+        // Start updating predictions every 100ms
+        updateInterval = setInterval(updatePredictions, 100);
+
+        // Initial update
+        updatePredictions();
+    </script>
+</body>
+</html>

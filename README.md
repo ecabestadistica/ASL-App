@@ -4,16 +4,14 @@ Real-time American Sign Language (ASL) alphabet recognition using a hybrid deep 
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-CC_BY_NC_4.0-green)
 
 ## Overview
 
 This application recognizes 24 static ASL letters (A-Y, excluding J and Z which require motion) using two DenseNet models in a hybrid configuration:
 
-- **Keypoints Model (DenseNet169)**: Primary model trained on MediaPipe hand landmark visualizations
-- **Final Model (DenseNet201)**: Fallback model trained on cropped hand images
-
-The system automatically selects the model with higher confidence for each prediction.
+- **DenseNet169**: Primary model trained on MediaPipe hand landmark visualizations
+- **DenseNet201**: Fallback model trained on cropped hand images
 
 ## Features
 
@@ -23,9 +21,9 @@ The system automatically selects the model with higher confidence for each predi
 - 📚 "Letter of the Day" learning feature with example images
 - 🌐 Web-based interface using Flask
 
-## Demo
+## Demo video
 
-![ASL Recognition Demo](demo.gif)
+- Webcam
 
 ## Installation
 
@@ -39,8 +37,8 @@ The system automatically selects the model with higher confidence for each predi
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/asl-recognition-hybrid.git
-   cd asl-recognition-hybrid
+   git clone https://github.com/ecabestadistica/ASL-App.git
+   cd ASL-App
    ```
 
 2. **Create a conda environment** (recommended)
@@ -63,13 +61,13 @@ The system automatically selects the model with higher confidence for each predi
    - `keypoints_model.h5` (67 MB) - DenseNet169 trained on keypoint visualizations
    - `final_model.h5` (127 MB) - DenseNet201 trained on hand images
 
-5. **Add example images** (optional)
+5. **Example images (learning mode)** 
    
-   Create an `Ejemplos/` folder with example images for each letter:
+   Make sure that you have the `Examples/` folder with example images for each letter:
    ```
-   Ejemplos/
-   ├── A.png
-   ├── B.png
+   Examples/
+   ├── A.webp
+   ├── B.webp
    └── ...
    ```
 
@@ -86,21 +84,21 @@ The system automatically selects the model with higher confidence for each predi
 
 3. **Start signing!**
    - Position your hand clearly in the camera view
-   - Make ASL letter signs
+   - Make ASL signs (follow the examples to learn)
    - The system will display predictions in real-time
 
 ## Project Structure
 
 ```
-asl-recognition-hybrid/
+ASL-App/
 ├── app_hybrid.py          # Main Flask application
 ├── templates/
 │   └── index.html         # Web interface
-├── Ejemplos/              # Example images for learning
-│   ├── A.png
+├── Examples/              # Example images for learning
+│   ├── A.webp
 │   └── ...
-├── keypoints_model.h5     # DenseNet169 model (not included)
-├── final_model.h5         # DenseNet201 model (not included)
+├── keypoints_model.h5     # DenseNet169 model (not included in repo: download from Drive)
+├── final_model.h5         # DenseNet201 model (not included in repo: download from Drive)
 ├── requirements.txt       # Python dependencies
 └── README.md
 ```
@@ -113,7 +111,7 @@ asl-recognition-hybrid/
 2. **Dual Prediction**: 
    - Keypoints model receives a 192x192 black canvas with landmark visualization
    - Final model receives the cropped hand region from the original frame
-3. **Confidence Selection**: The prediction with higher confidence is selected
+3. **Prediction**: Hybrid prediction: if landmarks are detected: DenseNet169, if not: DenseNet201
 4. **Temporal Smoothing**: Predictions are buffered over 10 frames to reduce noise
 
 ### Model Details
@@ -165,7 +163,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the CC BY-NC 4.0 License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -175,7 +173,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-**Elisa Cabana**
+**Elisa Cabana, CUNEF Universidad, Madrid, Spain elisa.cabana@cunef.edu**
 
 ---
 
