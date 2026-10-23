@@ -90,6 +90,8 @@ Two modes are available:
    
    Navigate to `http://localhost:5000`
 
+   > **Note for macOS users:** if `http://localhost:5000` shows "Access denied", open `http://127.0.0.1:5000` instead (port 5000 is also used by the AirPlay Receiver).
+
 3. **Start signing!**
    - Position your hand clearly in the camera view
    - Make ASL signs (follow the examples to learn)
