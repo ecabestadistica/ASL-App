@@ -130,7 +130,9 @@
         }
 
         .status-banner.detected {
-            display: none;
+            background: linear-gradient(135deg, #b8f5c9 0%, #7bdc9a 100%);
+            color: #2d3436;
+            display: block;
         }
 
         .status-icon {
@@ -288,6 +290,13 @@
             color: #999;
         }
 
+        .system-info {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #666;
+        }
+
         .no-predictions {
             text-align: center;
             padding: 30px;
@@ -318,6 +327,7 @@
                 <div class="video-container">
                     <img id="video" src="{{ url_for('video_feed') }}" alt="Video Feed">
                 </div>
+                <div class="system-info" id="systemInfo">Mode: -- · processing: -- FPS</div>
             </div>
 
             <div class="sidebar">
@@ -371,11 +381,24 @@
                     
                     statusBanner.className = 'status-banner ' + data.hand_status;
                     
+                    const modelNames = {
+                        'landmarks': 'landmark model (DenseNet169)',
+                        'fusion': 'landmark + image models (late fusion)',
+                        'image': 'image model (DenseNet201)'
+                    };
                     if (data.hand_status === 'waiting') {
                         statusMessage.innerHTML = '<span class="status-icon">👋</span> Show your hand to start';
-                    } else if (data.hand_status === 'lost') {
-                        statusMessage.innerHTML = '<span class="status-icon">⚠️</span> No hand detected';
+                    } else if (data.hand_status === 'detected') {
+                        statusMessage.innerHTML = '<span class="status-icon">✋</span> Hand landmarks detected · ' + modelNames[data.model_used];
+                    } else {
+                        statusMessage.innerHTML = '<span class="status-icon">⚠️</span> No hand landmarks · ' + (modelNames[data.model_used] || 'image model (DenseNet201)');
                     }
+
+                    // Mode and processing speed
+                    const ms = data.median_ms || {};
+                    document.getElementById('systemInfo').textContent =
+                        `Mode: ${data.mode === 'late_fusion' ? 'late fusion' : 'switching'} · ` +
+                        `processing: ${data.processing_fps ?? '--'} FPS (${ms.total ?? '--'} ms/frame)`;
 
                     // Update top 5 predictions
                     const list = document.getElementById('predictionsList');
@@ -399,7 +422,7 @@
                             list.appendChild(li);
                         });
                     } else {
-                        list.innerHTML = '<li class="no-predictions">No hand detected</li>';
+                        list.innerHTML = '<li class="no-predictions">Waiting for predictions...</li>';
                     }
 
                     // Update letter of the day

@@ -105,3 +105,6 @@ neptune_api_token.txt
 # Data folders (optional - uncomment if needed)
 # Ejemplos/
 # Datasets/
+
+# Local test video generated from the evaluation dataset
+test_video_CED.mp4
