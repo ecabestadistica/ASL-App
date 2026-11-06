@@ -11,7 +11,7 @@ Real-time American Sign Language (ASL) alphabet recognition using a hybrid deep 
 This application recognizes the 24 static ASL fingerspelling letters (A-Y, excluding J and Z, which require motion) with a landmark-aware adaptive system that combines two DenseNet models:
 
 - **DenseNet169** (landmark model): trained on images of the MediaPipe hand skeleton drawn on a black background (first 53 layers frozen). It is used whenever MediaPipe detects hand landmarks.
-- **DenseNet201** (image model): trained on the original hand images (all layers fine-tuned from ImageNet weights). It is used when no landmarks are detected.
+- **DenseNet201** (image model): trained on the original hand images (all layers trained). It is used when no landmarks are detected.
 
 Two modes are available:
 
@@ -134,7 +134,7 @@ The web interface polls the latest prediction every 100 ms.
 | Model | Architecture | Input | Training Data |
 |-------|-------------|-------|---------------|
 | Landmark | DenseNet169 (first 53 layers frozen) | 192x192 landmark image | Landmark-only images |
-| Image | DenseNet201 (all layers fine-tuned) | 192x192 hand image | Original images |
+| Image | DenseNet201 (all layers trained) | 192x192 hand image | Original images |
 
 ## API Endpoints
 
