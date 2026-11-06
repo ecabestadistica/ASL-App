@@ -190,8 +190,7 @@ This project is licensed under the CC BY-NC 4.0 License - see the [LICENSE](LICE
 
 ## Authors
 
-Alexandru Caragea, Elisa Cabana and Rosa Elvira Lillo
-**Contact email:** elisa.cabana@cunef.edu
+Alexandru Caragea, Elisa Cabana and Rosa Elvira Lillo. **Contact email:** elisa.cabana@cunef.edu
 
 ---
 
