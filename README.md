@@ -126,7 +126,7 @@ ASL-App/
    - `late_fusion`: landmarks detected → average of DenseNet169 and DenseNet201; otherwise → DenseNet201.
 4. **Temporal smoothing**: the final prediction is the mode of the last 10 frames.
 
-Measured on CPU (Apple M5 Pro, no GPU): about 23 FPS in `switching` mode and about 12 FPS in `late_fusion` mode.
+Measured on CPU (Apple M5 Pro, no GPU): about 22 FPS in `switching` mode and about 11 FPS in `late_fusion` mode.
 The web interface polls the latest prediction every 100 ms.
 
 ### Model Details
@@ -188,9 +188,10 @@ This project is licensed under the CC BY-NC 4.0 License - see the [LICENSE](LICE
 - [TensorFlow](https://www.tensorflow.org/) for deep learning framework
 - ASL alphabet dataset contributors
 
-## Author
+## Authors
 
-**Elisa Cabana, CUNEF Universidad, Madrid, Spain elisa.cabana@cunef.edu**
+Alexandru Caragea, Elisa Cabana and Rosa Elvira Lillo
+**Contact email:** elisa.cabana@cunef.edu
 
 ---
 
